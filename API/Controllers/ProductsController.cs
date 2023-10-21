@@ -16,7 +16,7 @@ namespace API.Controllers
         public ProductsController(StoreContext context)
         {
             this.Context = context;
-            
+
         }
 
         [HttpGet]
@@ -25,6 +25,14 @@ namespace API.Controllers
             var products = Context.Products.ToList();
 
             return Ok(products);
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<Product> GetProduct(int id)
+        {
+            var product = Context.Products.Find(id);
+
+            return product;
         }
     }
 }
