@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Catalog from "../../features/catalog/Catalog";
+import Catalog from "../features/catalog/Catalog";
 import "./App.css";
 import { Product } from "../models/product.interface";
 import { Typography } from "@mui/material";

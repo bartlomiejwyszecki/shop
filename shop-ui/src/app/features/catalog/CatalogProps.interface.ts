@@ -1,4 +1,4 @@
-import { Product } from "../../app/models/product.interface.ts";
+import { Product } from "../../models/product.interface.ts";
 
 export interface CatalogProps {
   products: Product[];
