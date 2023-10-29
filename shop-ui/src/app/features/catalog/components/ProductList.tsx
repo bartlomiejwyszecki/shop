@@ -1,4 +1,4 @@
-import { List } from "@mui/material";
+import { Grid, List } from "@mui/material";
 import { Product } from "../../../models/product.interface";
 import { ProductCard } from "./ProductCard";
 
@@ -8,10 +8,12 @@ interface ProductListProps {
 
 export default function ProductList({ products }: ProductListProps) {
   return (
-    <List>
+    <Grid container spacing={3}>
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <Grid item xs={12} sm={6} lg={4} xl={3}>
+          <ProductCard key={product.id} product={product} />
+        </Grid>
       ))}
-    </List>
+    </Grid>
   );
 }
