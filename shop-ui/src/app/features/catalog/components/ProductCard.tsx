@@ -7,7 +7,7 @@ export interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   return (
-    <ListItem key={product.id}>
+    <ListItem>
       <ListItemAvatar>
         <Avatar src={product.pictureUrl}></Avatar>
       </ListItemAvatar>
