@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Product } from "../../../models/product.interface";
+import { Link } from "react-router-dom";
 
 export interface ProductCardProps {
   product: Product;
@@ -36,7 +37,9 @@ export function ProductCard({ product }: ProductCardProps) {
       </CardContent>
       <CardActions>
         <Button size="small">Add to cart</Button>
-        <Button size="small">View</Button>
+        <Button size="small" component={Link} to={`/catalog/${product.id}`}>
+          View
+        </Button>
       </CardActions>
     </Card>
   );
