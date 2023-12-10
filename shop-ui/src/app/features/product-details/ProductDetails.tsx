@@ -1,8 +1,18 @@
-import { Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material";
+import {
+  Divider,
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Product } from "../../models/product.interface";
+import { productsHttp } from "../../api/productsHttp";
 
 export default function ProductDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -10,9 +20,9 @@ export default function ProductDetailsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:5265/products/${id}`)
-      .then((response) => setProduct(response.data))
+    id && productsHttp
+      .getProductDetails(parseInt(id))
+      .then((productDetails) => setProduct(productDetails))
       .catch((error) => console.log(error))
       .finally(() => setLoading(false));
   }, [id]);

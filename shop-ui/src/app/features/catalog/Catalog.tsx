@@ -2,14 +2,13 @@ import { Button } from "@mui/material";
 import ProductList from "./components/ProductList";
 import { useEffect, useState } from "react";
 import { Product } from "../../models/product.interface";
+import { productsHttp } from "../../api/productsHttp";
 
 export default function Catalog() {
   const [products, setProducts] = useState([] as Product[]);
 
   useEffect(() => {
-    fetch("http://localhost:5265/products")
-      .then((response) => response.json())
-      .then((data) => setProducts(data));
+    productsHttp.getProductsList().then((products) => setProducts(products));
   }, []);
 
   function addProduct() {}
