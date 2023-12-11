@@ -1,5 +1,6 @@
 import { Button, ButtonGroup, Container, Typography } from "@mui/material";
-import { testErrorsHttp } from "../../api/testErrorsHttp";
+import { testErrorsHttp } from "../../api/httpClient";
+import { toast } from "react-toastify";
 
 export default function AboutPage() {
   return (
@@ -10,7 +11,7 @@ export default function AboutPage() {
       <ButtonGroup fullWidth>
         <Button
           variant="contained"
-          onClick={() => testErrorsHttp.get400Error().catch(err => console.log(err))}
+          onClick={() => testErrorsHttp.get400Error().catch(error => console.log(error))}
         >
           400 Error
         </Button>
