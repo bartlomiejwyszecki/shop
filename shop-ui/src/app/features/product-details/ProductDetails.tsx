@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Product } from "../../models/product.interface";
 import { productsHttp } from "../../api/productsHttp";
+import NotFound from "../../errors/NotFound";
 
 export default function ProductDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -33,7 +34,7 @@ export default function ProductDetailsPage() {
   }
 
   if (!product) {
-    return <h3>Product not found</h3>;
+    return <NotFound />;
   }
 
   return (
