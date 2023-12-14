@@ -18,6 +18,9 @@ function App() {
 
   const theme = createTheme({
     palette: {
+      background: {
+        default: 'rgb(230, 230, 230)'
+      },
       mode: paletteType,
     },
   });

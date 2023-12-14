@@ -20,11 +20,12 @@ export default function ProductDetailsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    id && productsHttp
-      .getProductDetails(parseInt(id))
-      .then((productDetails) => setProduct(productDetails))
-      .catch((error) => console.log(error))
-      .finally(() => setLoading(false));
+    id &&
+      productsHttp
+        .getProductDetails(parseInt(id))
+        .then((productDetails) => setProduct(productDetails))
+        .catch((error) => console.log(error))
+        .finally(() => setLoading(false));
   }, [id]);
 
   if (loading) {
@@ -80,3 +81,59 @@ export default function ProductDetailsPage() {
     </Grid>
   );
 }
+
+const tableColumnsSavedByUser = [
+  {
+    name: "column3",
+    isVisible: false,
+    width: "20rem",
+  },
+  {
+    name: "column1",
+    isVisible: true,
+  },
+  {
+    name: "column2",
+    isVisible: true,
+  },
+];
+
+const initialTableColumns = [
+  {
+    name: "column1",
+    isVisible: true,
+  },
+  {
+    name: "column2",
+    isVisible: true,
+  },
+  {
+    name: "column3",
+    isVisible: true,
+    width: "20rem",
+  },
+  {
+    name: "column4",
+    isVisible: true,
+  },
+];
+
+const output = [
+  {
+    name: "column3",
+    isVisible: false,
+    width: "20rem",
+  },
+  {
+    name: "column1",
+    isVisible: true,
+  },
+  {
+    name: "column2",
+    isVisible: true,
+  },
+  {
+    name: "column4",
+    isVisible: true,
+  },
+];
