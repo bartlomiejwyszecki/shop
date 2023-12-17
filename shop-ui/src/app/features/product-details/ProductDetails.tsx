@@ -14,6 +14,7 @@ import { useParams } from "react-router-dom";
 import { Product } from "../../models/product.interface";
 import { productsHttp } from "../../api/productsHttp";
 import NotFound from "../../errors/NotFound";
+import LoadingComponent from "../../layout/LoadingComponent";
 
 export default function ProductDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +31,7 @@ export default function ProductDetailsPage() {
   }, [id]);
 
   if (loading) {
-    return <h3>Loading...</h3>;
+    return <LoadingComponent />;
   }
 
   if (!product) {
