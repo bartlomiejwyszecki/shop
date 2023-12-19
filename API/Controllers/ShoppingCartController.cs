@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
 using API.Entities;
+using API.Interfaces;
+using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -15,20 +17,21 @@ namespace API.Controllers
     {
         private readonly ILogger<ShoppingCartController> _logger;
         private readonly StoreContext _context;
+        private readonly IShoppingCartService _shoppingCartService;
 
-        public ShoppingCartController(StoreContext context, ILogger<ShoppingCartController> logger)
+        public ShoppingCartController(StoreContext context, ILogger<ShoppingCartController> logger, IShoppingCartService shoppingCartService)
         {
             _context = context;
             _logger = logger;
+            _shoppingCartService = shoppingCartService;
         }
 
         [HttpGet]
         public async Task<ActionResult<ShoppingCart>> GetShoppingCart()
         {
-            var shoppingCart = await _context.ShoppingCarts
-                .Include(item => item.Items)
-                .ThenInclude(product => product.Product)
-                .FirstOrDefaultAsync(x => x.CustomerId == Request.Cookies["customerId"]);
+            var customerId = Request.Cookies["customerId"]; 
+
+            var shoppingCart = await _shoppingCartService.GetShoppingCartAsync(customerId);
             
             if (shoppingCart == null) return NotFound();
 
