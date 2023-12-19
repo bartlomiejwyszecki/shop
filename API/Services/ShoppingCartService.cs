@@ -1,3 +1,4 @@
+using System.Net;
 using API.Data;
 using API.Entities;
 using API.Interfaces;
@@ -20,6 +21,16 @@ namespace API.Services
                 .Include(item => item.Items)
                 .ThenInclude(product => product.Product)
                 .FirstOrDefaultAsync(x => x.CustomerId == customerId);
+        }
+
+        public (ShoppingCart, string) CreateShoppingCart()
+        {
+            var customerId = Guid.NewGuid().ToString();
+            var shoppingCart = new ShoppingCart{CustomerId = customerId};
+
+            _context.ShoppingCarts.Add(shoppingCart);
+
+            return (shoppingCart, customerId);
         }
     }
 }
