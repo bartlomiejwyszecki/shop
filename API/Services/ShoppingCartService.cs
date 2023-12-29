@@ -1,5 +1,6 @@
 using System.Net;
 using API.Data;
+using API.DTOs;
 using API.Entities;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,25 @@ namespace API.Services
             _context.ShoppingCarts.Add(shoppingCart);
 
             return (shoppingCart, customerId);
+        }
+
+        public ShoppingCartDto CreateShoppingCartDto(ShoppingCart shoppingCart)
+        {
+            return new ShoppingCartDto
+            {
+                Id = shoppingCart.Id,
+                CustomerId = shoppingCart.CustomerId,
+                Items = shoppingCart.Items.Select(item => new ShoppingCartItemDto
+                {
+                    ProductId = item.ProductId,
+                    Name = item.Product.Name,
+                    Price = item.Product.Price,
+                    PictureUrl = item.Product.PictureUrl,
+                    Type = item.Product.Type,
+                    Brand = item.Product.Brand,
+                    Quantity = item.Quantity
+                }).ToList()
+            };
         }
     }
 }

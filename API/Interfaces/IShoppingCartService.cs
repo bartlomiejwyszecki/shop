@@ -1,3 +1,4 @@
+using API.DTOs;
 using API.Entities;
 
 namespace API.Interfaces
@@ -6,5 +7,6 @@ namespace API.Interfaces
     {
         Task<ShoppingCart> GetShoppingCartAsync(string customerId);
         (ShoppingCart, string) CreateShoppingCart();
+        ShoppingCartDto CreateShoppingCartDto(ShoppingCart shoppingCart);
     }
 }

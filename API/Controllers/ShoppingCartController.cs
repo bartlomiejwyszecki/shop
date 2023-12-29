@@ -27,40 +27,26 @@ namespace API.Controllers
             _shoppingCartService = shoppingCartService;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetShoppingCart")]
         public async Task<ActionResult<ShoppingCartDto>> GetShoppingCart()
         {
-            var customerId = Request.Cookies["customerId"]; 
+            var customerId = Request.Cookies["customerId"];
 
             var shoppingCart = await _shoppingCartService.GetShoppingCartAsync(customerId);
-            
+
             if (shoppingCart == null) return NotFound();
 
-            return new ShoppingCartDto
-            {
-                Id = shoppingCart.Id,
-                CustomerId = shoppingCart.CustomerId,
-                Items = shoppingCart.Items.Select(item => new ShoppingCartItemDto
-                {
-                    ProductId = item.ProductId,
-                    Name = item.Product.Name,
-                    Price = item.Product.Price,
-                    PictureUrl = item.Product.PictureUrl,
-                    Type = item.Product.Type,
-                    Brand = item.Product.Brand,
-                    Quantity = item.Quantity
-                }).ToList()
-            };
+            return _shoppingCartService.CreateShoppingCartDto(shoppingCart);
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddShoppingCartItem(int productId, int quantity)
+        public async Task<ActionResult<ShoppingCartDto>> AddShoppingCartItem(int productId, int quantity)
         {
-            var customerId = Request.Cookies["customerId"]; 
+            var customerId = Request.Cookies["customerId"];
 
             var shoppingCart = await _shoppingCartService.GetShoppingCartAsync(customerId);
 
-            if (shoppingCart == null) 
+            if (shoppingCart == null)
             {
                 var (newShoppingCart, newCustomerId) = _shoppingCartService.CreateShoppingCart();
 
@@ -79,19 +65,19 @@ namespace API.Controllers
 
             var result = await _context.SaveChangesAsync() > 0;
 
-            if (result) return StatusCode(201);
+            if (result) return CreatedAtRoute("GetShoppingCart", _shoppingCartService.CreateShoppingCartDto(shoppingCart));
 
-            return BadRequest(new ProblemDetails{Title = "Problem saving item to basket"});
+            return BadRequest(new ProblemDetails { Title = "Problem saving item to basket" });
         }
 
         [HttpDelete]
         public async Task<ActionResult> RemoveShoppingCartItem(int productId, int quantity)
         {
-            var customerId = Request.Cookies["customerId"]; 
+            var customerId = Request.Cookies["customerId"];
 
             var shoppingCart = await _shoppingCartService.GetShoppingCartAsync(customerId);
 
-            if (shoppingCart == null) 
+            if (shoppingCart == null)
             {
                 return NotFound();
             }
@@ -102,7 +88,7 @@ namespace API.Controllers
 
             if (result) return Ok();
 
-            return BadRequest(new ProblemDetails{Title = "Unable to remove shopping cart item"});
+            return BadRequest(new ProblemDetails { Title = "Unable to remove shopping cart item" });
         }
     }
 }
