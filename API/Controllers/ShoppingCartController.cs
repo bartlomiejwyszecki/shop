@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
+using API.DTOs;
 using API.Entities;
 using API.Interfaces;
 using API.Services;
@@ -27,7 +28,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ShoppingCart>> GetShoppingCart()
+        public async Task<ActionResult<ShoppingCartDto>> GetShoppingCart()
         {
             var customerId = Request.Cookies["customerId"]; 
 
@@ -35,7 +36,21 @@ namespace API.Controllers
             
             if (shoppingCart == null) return NotFound();
 
-            return shoppingCart;
+            return new ShoppingCartDto
+            {
+                Id = shoppingCart.Id,
+                CustomerId = shoppingCart.CustomerId,
+                Items = shoppingCart.Items.Select(item => new ShoppingCartItemDto
+                {
+                    ProductId = item.ProductId,
+                    Name = item.Product.Name,
+                    Price = item.Product.Price,
+                    PictureUrl = item.Product.PictureUrl,
+                    Type = item.Product.Type,
+                    Brand = item.Product.Brand,
+                    Quantity = item.Quantity
+                }).ToList()
+            };
         }
 
         [HttpPost]
@@ -67,6 +82,27 @@ namespace API.Controllers
             if (result) return StatusCode(201);
 
             return BadRequest(new ProblemDetails{Title = "Problem saving item to basket"});
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> RemoveShoppingCartItem(int productId, int quantity)
+        {
+            var customerId = Request.Cookies["customerId"]; 
+
+            var shoppingCart = await _shoppingCartService.GetShoppingCartAsync(customerId);
+
+            if (shoppingCart == null) 
+            {
+                return NotFound();
+            }
+
+            shoppingCart.RemoveItem(productId, quantity);
+
+            var result = await _context.SaveChangesAsync() > 0;
+
+            if (result) return Ok();
+
+            return BadRequest(new ProblemDetails{Title = "Unable to remove shopping cart item"});
         }
     }
 }
