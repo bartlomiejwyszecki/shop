@@ -10,12 +10,26 @@ import {
 } from "@mui/material";
 import { Product } from "../../../models/product.interface";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { shoppingCartHttp } from "../../../api/httpClient";
+
+import { LoadingButton } from "@mui/lab";
 
 export interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  function handleAddItem(productId: number) {
+    setIsLoading(true);
+
+    shoppingCartHttp
+      .addItem(productId)
+      .catch((error) => console.log(error))
+      .finally(() => setIsLoading(false));
+  }
   return (
     <Card>
       <CardHeader
@@ -36,7 +50,13 @@ export function ProductCard({ product }: ProductCardProps) {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small">Add to cart</Button>
+        <LoadingButton
+          size="small"
+          loading={isLoading}
+          onClick={() => handleAddItem(product.id)}
+        >
+          Add to cart
+        </LoadingButton>
         <Button size="small" component={Link} to={`/catalog/${product.id}`}>
           View
         </Button>

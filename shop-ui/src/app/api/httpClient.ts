@@ -4,7 +4,8 @@ import { router } from "../router/Routes";
 
 const sleep = () => new Promise((resolve) => setTimeout(resolve, 500));
 
-axios.defaults.baseURL = "http://localhost:5265/";
+axios.defaults.baseURL = "http://localhost:5265/api/";
+axios.defaults.withCredentials = true;
 
 const responseBody = (response: AxiosResponse) => response.data;
 
@@ -52,6 +53,17 @@ export const testErrorsHttp = {
   get404Error: () => requests.get("buggy/not-found"),
   get500Error: () => requests.get("buggy/server-error"),
   getValidationError: () => requests.get("buggy/validation-error"),
+};
+
+export const shoppingCartHttp = {
+  get: () => requests.get("shoppingCart"),
+  addItem: (productId: number, quantity = 1) =>
+    requests.post(
+      `shoppingCart?productId=${productId}&quantity=${quantity}`,
+      {}
+    ),
+  removeItem: (productId: number, quantity = 1) =>
+    requests.delete(`shoppingCart?productId=${productId}&quantity=${quantity}`),
 };
 
 export default requests;
