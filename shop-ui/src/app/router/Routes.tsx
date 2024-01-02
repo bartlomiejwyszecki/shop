@@ -7,6 +7,7 @@ import AboutPage from "../features/about/About";
 import ContactPage from "../features/contact/Contact";
 import ServerError from "../errors/ServerError";
 import NotFound from "../errors/NotFound";
+import ShoppingCart from "../features/shopping-cart/ShoppingCart";
 
 export const router = createBrowserRouter([
     {
@@ -40,6 +41,10 @@ export const router = createBrowserRouter([
             {
                 path: 'not-found',
                 element: <NotFound />
+            },
+            {
+                path: 'shopping-cart',
+                element: <ShoppingCart />
             },
             {
                 path: '*',

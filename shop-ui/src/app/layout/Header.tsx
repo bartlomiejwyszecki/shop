@@ -10,7 +10,7 @@ import {
   Badge,
   Box,
 } from "@mui/material";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const midLinks = [
   {
@@ -88,7 +88,14 @@ export default function Header({ darkMode, darkModeChange }: HeaderProps) {
         </List>
 
         <Box sx={boxStyles}>
-          <IconButton size="large" edge="start" color="inherit" sx={{ mr: 2 }}>
+          <IconButton
+            component={Link}
+            to="/shopping-cart"
+            size="large"
+            edge="start"
+            color="inherit"
+            sx={{ mr: 2 }}
+          >
             <Badge badgeContent="4" color="secondary">
               <ShoppingCart />
             </Badge>
