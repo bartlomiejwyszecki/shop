@@ -11,6 +11,7 @@ import {
   Box,
 } from "@mui/material";
 import { Link, NavLink } from "react-router-dom";
+import { useStoreContext } from "../context/StoreContext";
 
 const midLinks = [
   {
@@ -58,6 +59,13 @@ interface HeaderProps {
 }
 
 export default function Header({ darkMode, darkModeChange }: HeaderProps) {
+  const { shoppingCart } = useStoreContext();
+
+  const shoppingCartItemsCount = shoppingCart?.items.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     darkModeChange(event.target.checked);
   };
@@ -96,7 +104,7 @@ export default function Header({ darkMode, darkModeChange }: HeaderProps) {
             color="inherit"
             sx={{ mr: 2 }}
           >
-            <Badge badgeContent="4" color="secondary">
+            <Badge badgeContent={shoppingCartItemsCount} color="secondary">
               <ShoppingCart />
             </Badge>
           </IconButton>

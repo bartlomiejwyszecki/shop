@@ -8,7 +8,6 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Product } from "../../models/product.interface";
@@ -83,59 +82,3 @@ export default function ProductDetailsPage() {
     </Grid>
   );
 }
-
-const tableColumnsSavedByUser = [
-  {
-    name: "column3",
-    isVisible: false,
-    width: "20rem",
-  },
-  {
-    name: "column1",
-    isVisible: true,
-  },
-  {
-    name: "column2",
-    isVisible: true,
-  },
-];
-
-const initialTableColumns = [
-  {
-    name: "column1",
-    isVisible: true,
-  },
-  {
-    name: "column2",
-    isVisible: true,
-  },
-  {
-    name: "column3",
-    isVisible: true,
-    width: "20rem",
-  },
-  {
-    name: "column4",
-    isVisible: true,
-  },
-];
-
-const output = [
-  {
-    name: "column3",
-    isVisible: false,
-    width: "20rem",
-  },
-  {
-    name: "column1",
-    isVisible: true,
-  },
-  {
-    name: "column2",
-    isVisible: true,
-  },
-  {
-    name: "column4",
-    isVisible: true,
-  },
-];

@@ -14,6 +14,7 @@ import { useState } from "react";
 import { shoppingCartHttp } from "../../../api/httpClient";
 
 import { LoadingButton } from "@mui/lab";
+import { useStoreContext } from "../../../context/StoreContext";
 
 export interface ProductCardProps {
   product: Product;
@@ -21,12 +22,14 @@ export interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const {setShoppingCart} = useStoreContext();
 
   function handleAddItem(productId: number) {
     setIsLoading(true);
 
     shoppingCartHttp
       .addItem(productId)
+      .then(shoppingCart => setShoppingCart(shoppingCart))
       .catch((error) => console.log(error))
       .finally(() => setIsLoading(false));
   }
