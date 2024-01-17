@@ -1,6 +1,7 @@
 import { ShoppingCart } from "../../models/shopping-cart.interface";
 import {
   Box,
+  Button,
   Grid,
   Paper,
   Table,
@@ -18,6 +19,7 @@ import { shoppingCartHttp } from "../../api/httpClient";
 import { LoadingButton } from "@mui/lab";
 import ShoppingCartSummary from "./ShoppingCartSummary";
 import { getPriceDisplayValue } from "../../utils/get-price-display-value";
+import { Link } from "react-router-dom";
 
 export default function ShoppingCart() {
   const { shoppingCart, setShoppingCart, removeItem } = useStoreContext();
@@ -153,6 +155,15 @@ export default function ShoppingCart() {
         <Grid item xs={6}></Grid>
         <Grid item xs={6}>
           <ShoppingCartSummary />
+          <Button
+            component={Link}
+            to="/checkout"
+            variant="contained"
+            size="large"
+            fullWidth
+          >
+            Checkout
+          </Button>
         </Grid>
       </Grid>
     </>
