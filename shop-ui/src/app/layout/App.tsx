@@ -10,13 +10,15 @@ import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/ReactToastify.css';
-import { useStoreContext } from "../context/StoreContext";
 import { getCookie } from "../utils/get-cookie";
 import { shoppingCartHttp } from "../api/httpClient";
 import LoadingComponent from "./LoadingComponent";
+import { useAppDispatch } from "../store/configureStore";
+import { setShoppingCart } from "../features/shopping-cart/shoppingCartSlice";
 
 function App() {
-  const { setShoppingCart } = useStoreContext();
+  const dispatch = useAppDispatch();
+  
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -24,13 +26,13 @@ function App() {
 
     if (customerId) {
       shoppingCartHttp.get()
-        .then(shoppingCart => setShoppingCart(shoppingCart))
+        .then(shoppingCart => dispatch(setShoppingCart(shoppingCart)))
         .catch(error => console.log(error))
         .finally(() => setIsLoading(false))
     } else {
       setIsLoading(false);
     }
-  }, [setShoppingCart]);
+  }, [dispatch]);
 
   const [darkMode, setDarkMode] = useState(false);
 
