@@ -1,13 +1,27 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ShoppingCart } from "../../models/shopping-cart.interface";
+import { shoppingCartHttp } from "../../api/httpClient";
 
 export interface ShoppingCartState {
   shoppingCart: ShoppingCart | null;
+  status: string;
 }
 
 const initialState: ShoppingCartState = {
   shoppingCart: null,
+  status: "idle",
 };
+
+export const addShoppingCartItemAsyc = createAsyncThunk<
+  ShoppingCart,
+  { productId: number; quantity: number }
+>("shoppingCart/addShoppingCartItemAsync", async ({ productId, quantity }) => {
+  try {
+    return await shoppingCartHttp.addItem(productId, quantity);
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 export const shoppingCartSlice = createSlice({
   name: "shoppingCart",
@@ -30,6 +44,19 @@ export const shoppingCartSlice = createSlice({
         state.shoppingCart!.items.splice(itemIndex, 1);
       }
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(addShoppingCartItemAsyc.pending, (state, action) => {
+      console.log(action);
+      state.status = "pending";
+    });
+    builder.addCase(addShoppingCartItemAsyc.fulfilled, (state, action) => {
+      state.shoppingCart = action.payload;
+      state.status = "idle";
+    });
+    builder.addCase(addShoppingCartItemAsyc.rejected, (state) => {
+      state.status = "idle";
+    });
   },
 });
 

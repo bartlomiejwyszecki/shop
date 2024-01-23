@@ -13,16 +13,21 @@ import {
   Typography,
 } from "@mui/material";
 import { Add, Delete, Remove } from "@mui/icons-material";
-import { useStoreContext } from "../../context/StoreContext";
 import { useState } from "react";
 import { shoppingCartHttp } from "../../api/httpClient";
 import { LoadingButton } from "@mui/lab";
 import ShoppingCartSummary from "./ShoppingCartSummary";
 import { getPriceDisplayValue } from "../../utils/get-price-display-value";
 import { Link } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../store/configureStore";
+import { removeItem, setShoppingCart } from "./shoppingCartSlice";
 
 export default function ShoppingCart() {
-  const { shoppingCart, setShoppingCart, removeItem } = useStoreContext();
+  // const { shoppingCart, setShoppingCart, removeItem } = useStoreContext();
+  const { shoppingCart } = useAppSelector(state => state.shoppingCart);
+
+  const dispatch = useAppDispatch();
+
   const [status, setStatus] = useState({
     isLoading: false,
     name: "",
@@ -36,7 +41,7 @@ export default function ShoppingCart() {
 
     shoppingCartHttp
       .addItem(productId)
-      .then((shoppingCart) => setShoppingCart(shoppingCart))
+      .then((shoppingCart) => dispatch(setShoppingCart(shoppingCart)))
       .catch((error) => console.log(error))
       .finally(() =>
         setStatus({
@@ -54,7 +59,7 @@ export default function ShoppingCart() {
 
     shoppingCartHttp
       .removeItem(productId, quantity)
-      .then(() => removeItem(productId, quantity))
+      .then(() => dispatch(removeItem({ productId, quantity })))
       .catch((error) => console.log(error))
       .finally(() =>
         setStatus({

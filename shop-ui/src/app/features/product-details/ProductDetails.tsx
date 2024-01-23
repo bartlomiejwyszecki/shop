@@ -15,12 +15,19 @@ import { Product } from "../../models/product.interface";
 import { productsHttp } from "../../api/productsHttp";
 import NotFound from "../../errors/NotFound";
 import LoadingComponent from "../../layout/LoadingComponent";
-import { useStoreContext } from "../../context/StoreContext";
 import { LoadingButton } from "@mui/lab";
 import { shoppingCartHttp } from "../../api/httpClient";
+import { useAppDispatch, useAppSelector } from "../../store/configureStore";
+import {
+  removeItem,
+  setShoppingCart,
+} from "../shopping-cart/shoppingCartSlice";
 
 export default function ProductDetailsPage() {
-  const { shoppingCart, setShoppingCart, removeItem } = useStoreContext();
+  const { shoppingCart } = useAppSelector((state) => state.shoppingCart);
+
+  const dispatch = useAppDispatch();
+
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,7 +62,7 @@ export default function ProductDetailsPage() {
 
       shoppingCartHttp
         .addItem(product!.id, updatedQuantity)
-        .then((shoppingCart) => setShoppingCart(shoppingCart))
+        .then((shoppingCart) => dispatch(setShoppingCart(shoppingCart)))
         .catch((error) => console.log(error))
         .finally(() => setIsSubmitting(false));
     } else {
@@ -63,7 +70,11 @@ export default function ProductDetailsPage() {
 
       shoppingCartHttp
         .removeItem(product!.id, updatedQuantity)
-        .then(() => removeItem(product!.id, updatedQuantity))
+        .then(() =>
+          dispatch(
+            removeItem({ productId: product!.id, quantity: updatedQuantity })
+          )
+        )
         .catch((error) => console.log(error))
         .finally(() => setIsSubmitting(false));
     }

@@ -11,7 +11,7 @@ import {
   Box,
 } from "@mui/material";
 import { Link, NavLink } from "react-router-dom";
-import { useStoreContext } from "../context/StoreContext";
+import { useAppSelector } from "../store/configureStore";
 
 const midLinks = [
   {
@@ -59,7 +59,7 @@ interface HeaderProps {
 }
 
 export default function Header({ darkMode, darkModeChange }: HeaderProps) {
-  const { shoppingCart } = useStoreContext();
+  const { shoppingCart } = useAppSelector(state => state.shoppingCart);
 
   const shoppingCartItemsCount = shoppingCart?.items.reduce(
     (sum, item) => sum + item.quantity,

@@ -14,7 +14,8 @@ import { useState } from "react";
 import { shoppingCartHttp } from "../../../api/httpClient";
 
 import { LoadingButton } from "@mui/lab";
-import { useStoreContext } from "../../../context/StoreContext";
+import { useAppDispatch } from "../../../store/configureStore";
+import { setShoppingCart } from "../../shopping-cart/shoppingCartSlice";
 
 export interface ProductCardProps {
   product: Product;
@@ -22,14 +23,14 @@ export interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const {setShoppingCart} = useStoreContext();
+  const dispatch = useAppDispatch();
 
   function handleAddItem(productId: number) {
     setIsLoading(true);
 
     shoppingCartHttp
       .addItem(productId)
-      .then(shoppingCart => setShoppingCart(shoppingCart))
+      .then(shoppingCart => dispatch(setShoppingCart(shoppingCart)))
       .catch((error) => console.log(error))
       .finally(() => setIsLoading(false));
   }

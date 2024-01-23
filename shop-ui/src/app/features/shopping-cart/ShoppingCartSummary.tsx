@@ -6,11 +6,11 @@ import {
   TableRow,
   TableCell,
 } from "@mui/material";
-import { useStoreContext } from "../../context/StoreContext";
 import { getPriceDisplayValue } from "../../utils/get-price-display-value";
+import { useAppSelector } from "../../store/configureStore";
 
 export default function ShoppingCartSummary() {
-  const { shoppingCart } = useStoreContext();
+  const { shoppingCart } = useAppSelector(state => state.shoppingCart);
 
   const subtotal = shoppingCart?.items.reduce(
     (sum, item) => sum + (item.quantity * (item.price / 100)),
