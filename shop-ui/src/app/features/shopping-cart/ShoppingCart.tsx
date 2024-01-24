@@ -13,60 +13,29 @@ import {
   Typography,
 } from "@mui/material";
 import { Add, Delete, Remove } from "@mui/icons-material";
-import { useState } from "react";
-import { shoppingCartHttp } from "../../api/httpClient";
 import { LoadingButton } from "@mui/lab";
 import ShoppingCartSummary from "./ShoppingCartSummary";
 import { getPriceDisplayValue } from "../../utils/get-price-display-value";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store/configureStore";
-import { removeItem, setShoppingCart } from "./shoppingCartSlice";
+import {
+  addShoppingCartItemAsyc,
+  removeShoppingCartItemAsyc,
+} from "./shoppingCartSlice";
 
 export default function ShoppingCart() {
-  // const { shoppingCart, setShoppingCart, removeItem } = useStoreContext();
-  const { shoppingCart } = useAppSelector(state => state.shoppingCart);
+  const { shoppingCart, status } = useAppSelector(
+    (state) => state.shoppingCart
+  );
 
   const dispatch = useAppDispatch();
 
-  const [status, setStatus] = useState({
-    isLoading: false,
-    name: "",
-  });
-
-  function handleAddItem(productId: number, name: string) {
-    setStatus({
-      isLoading: true,
-      name,
-    });
-
-    shoppingCartHttp
-      .addItem(productId)
-      .then((shoppingCart) => dispatch(setShoppingCart(shoppingCart)))
-      .catch((error) => console.log(error))
-      .finally(() =>
-        setStatus({
-          isLoading: false,
-          name: "",
-        })
-      );
+  function handleAddItem(productId: number) {
+    dispatch(addShoppingCartItemAsyc({ productId }));
   }
 
-  function handleRemoveItem(productId: number, name: string, quantity = 1) {
-    setStatus({
-      isLoading: true,
-      name,
-    });
-
-    shoppingCartHttp
-      .removeItem(productId, quantity)
-      .then(() => dispatch(removeItem({ productId, quantity })))
-      .catch((error) => console.log(error))
-      .finally(() =>
-        setStatus({
-          isLoading: false,
-          name: "",
-        })
-      );
+  function handleRemoveItem(productId: number, quantity = 1) {
+    dispatch(removeShoppingCartItemAsyc({ productId, quantity }));
   }
 
   if (!shoppingCart) {
@@ -109,24 +78,18 @@ export default function ShoppingCart() {
                 <TableCell align="center">
                   <LoadingButton
                     color="error"
-                    loading={
-                      status.isLoading && status.name === "rem" + item.productId
-                    }
-                    onClick={() =>
-                      handleRemoveItem(item.productId, "rem" + item.productId)
-                    }
+                    loading={status.includes(
+                      "pendingRemoveItem" + item.productId
+                    )}
+                    onClick={() => handleRemoveItem(item.productId)}
                   >
                     <Remove />
                   </LoadingButton>
                   {item.quantity}
                   <LoadingButton
-                    color="error"
-                    loading={
-                      status.isLoading && status.name === "add" + item.productId
-                    }
-                    onClick={() =>
-                      handleAddItem(item.productId, "add" + item.productId)
-                    }
+                    color="secondary"
+                    loading={status.includes("pending" + item.productId)}
+                    onClick={() => handleAddItem(item.productId)}
                   >
                     <Add />
                   </LoadingButton>
@@ -137,15 +100,11 @@ export default function ShoppingCart() {
                 <TableCell align="right">
                   <LoadingButton
                     color="error"
-                    loading={
-                      status.isLoading && status.name === "rem" + item.productId
-                    }
+                    loading={status.includes(
+                      "pendingRemoveItem" + item.productId
+                    )}
                     onClick={() =>
-                      handleRemoveItem(
-                        item.productId,
-                        "rem" + item.productId,
-                        item.quantity
-                      )
+                      handleRemoveItem(item.productId, item.quantity)
                     }
                   >
                     <Delete />

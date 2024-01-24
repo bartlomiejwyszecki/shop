@@ -14,14 +14,31 @@ const initialState: ShoppingCartState = {
 
 export const addShoppingCartItemAsyc = createAsyncThunk<
   ShoppingCart,
-  { productId: number; quantity: number }
->("shoppingCart/addShoppingCartItemAsync", async ({ productId, quantity }) => {
-  try {
-    return await shoppingCartHttp.addItem(productId, quantity);
-  } catch (error) {
-    console.log(error);
+  { productId: number; quantity?: number }
+>(
+  "shoppingCart/addShoppingCartItemAsync",
+  async ({ productId, quantity = 1 }) => {
+    try {
+      return await shoppingCartHttp.addItem(productId, quantity);
+    } catch (error) {
+      console.log(error);
+    }
   }
-});
+);
+
+export const removeShoppingCartItemAsyc = createAsyncThunk<
+  void,
+  { productId: number; quantity?: number }
+>(
+  "shoppingCart/removeShoppingCartItemAsync",
+  async ({ productId, quantity = 1 }) => {
+    try {
+      await shoppingCartHttp.removeItem(productId, quantity);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
 
 export const shoppingCartSlice = createSlice({
   name: "shoppingCart",
@@ -30,25 +47,10 @@ export const shoppingCartSlice = createSlice({
     setShoppingCart: (state, action) => {
       state.shoppingCart = action.payload;
     },
-    removeItem: (state, action) => {
-      const { productId, quantity } = action.payload;
-      const itemIndex = state.shoppingCart?.items.findIndex(
-        (i) => i.productId === productId
-      );
-
-      if (itemIndex === -1 || itemIndex === undefined) return;
-
-      state.shoppingCart!.items[itemIndex].quantity -= quantity;
-
-      if (state.shoppingCart!.items[itemIndex].quantity <= 0) {
-        state.shoppingCart!.items.splice(itemIndex, 1);
-      }
-    },
   },
   extraReducers: (builder) => {
     builder.addCase(addShoppingCartItemAsyc.pending, (state, action) => {
-      console.log(action);
-      state.status = "pending";
+      state.status = "pending" + action.meta.arg.productId;
     });
     builder.addCase(addShoppingCartItemAsyc.fulfilled, (state, action) => {
       state.shoppingCart = action.payload;
@@ -57,7 +59,30 @@ export const shoppingCartSlice = createSlice({
     builder.addCase(addShoppingCartItemAsyc.rejected, (state) => {
       state.status = "idle";
     });
+    builder.addCase(removeShoppingCartItemAsyc.pending, (state, action) => {
+      state.status = "pendingRemoveItem" + action.meta.arg.productId;
+    });
+    builder.addCase(removeShoppingCartItemAsyc.fulfilled, (state, action) => {
+      const { productId, quantity } = action.meta.arg;
+
+      const itemIndex = state.shoppingCart?.items.findIndex(
+        (i) => i.productId === productId
+      );
+
+      if (itemIndex === -1 || itemIndex === undefined) return;
+
+      state.shoppingCart!.items[itemIndex].quantity -= quantity!;
+
+      if (state.shoppingCart!.items[itemIndex].quantity <= 0) {
+        state.shoppingCart!.items.splice(itemIndex, 1);
+      }
+
+      state.status = "idle";
+    });
+    builder.addCase(removeShoppingCartItemAsyc.rejected, (state) => {
+      state.status = "idle";
+    });
   },
 });
 
-export const { setShoppingCart, removeItem } = shoppingCartSlice.actions;
+export const { setShoppingCart } = shoppingCartSlice.actions;

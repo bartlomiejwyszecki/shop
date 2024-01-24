@@ -10,30 +10,19 @@ import {
 } from "@mui/material";
 import { Product } from "../../../models/product.interface";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { shoppingCartHttp } from "../../../api/httpClient";
 
 import { LoadingButton } from "@mui/lab";
-import { useAppDispatch } from "../../../store/configureStore";
-import { setShoppingCart } from "../../shopping-cart/shoppingCartSlice";
+import { useAppDispatch, useAppSelector } from "../../../store/configureStore";
+import { addShoppingCartItemAsyc } from "../../shopping-cart/shoppingCartSlice";
 
 export interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const {status} = useAppSelector(state => state.shoppingCart);
   const dispatch = useAppDispatch();
 
-  function handleAddItem(productId: number) {
-    setIsLoading(true);
-
-    shoppingCartHttp
-      .addItem(productId)
-      .then(shoppingCart => dispatch(setShoppingCart(shoppingCart)))
-      .catch((error) => console.log(error))
-      .finally(() => setIsLoading(false));
-  }
   return (
     <Card>
       <CardHeader
@@ -56,8 +45,8 @@ export function ProductCard({ product }: ProductCardProps) {
       <CardActions>
         <LoadingButton
           size="small"
-          loading={isLoading}
-          onClick={() => handleAddItem(product.id)}
+          loading={status.includes('pending' + product.id)}
+          onClick={() => dispatch(addShoppingCartItemAsyc({productId: product.id }))}
         >
           Add to cart
         </LoadingButton>

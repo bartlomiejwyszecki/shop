@@ -16,15 +16,16 @@ import { productsHttp } from "../../api/productsHttp";
 import NotFound from "../../errors/NotFound";
 import LoadingComponent from "../../layout/LoadingComponent";
 import { LoadingButton } from "@mui/lab";
-import { shoppingCartHttp } from "../../api/httpClient";
 import { useAppDispatch, useAppSelector } from "../../store/configureStore";
 import {
-  removeItem,
-  setShoppingCart,
+  addShoppingCartItemAsyc,
+  removeShoppingCartItemAsyc,
 } from "../shopping-cart/shoppingCartSlice";
 
 export default function ProductDetailsPage() {
-  const { shoppingCart } = useAppSelector((state) => state.shoppingCart);
+  const { shoppingCart, status } = useAppSelector(
+    (state) => state.shoppingCart
+  );
 
   const dispatch = useAppDispatch();
 
@@ -32,7 +33,6 @@ export default function ProductDetailsPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const item = shoppingCart?.items.find(
     (item) => item.productId === product?.id
   );
@@ -55,28 +55,24 @@ export default function ProductDetailsPage() {
   }
 
   function handleUpdateCart() {
-    setIsSubmitting(true);
-
     if (!item || quantity > item.quantity) {
       const updatedQuantity = item ? quantity - item.quantity : quantity;
 
-      shoppingCartHttp
-        .addItem(product!.id, updatedQuantity)
-        .then((shoppingCart) => dispatch(setShoppingCart(shoppingCart)))
-        .catch((error) => console.log(error))
-        .finally(() => setIsSubmitting(false));
+      dispatch(
+        addShoppingCartItemAsyc({
+          productId: product!.id,
+          quantity: updatedQuantity,
+        })
+      );
     } else {
       const updatedQuantity = item.quantity - quantity;
 
-      shoppingCartHttp
-        .removeItem(product!.id, updatedQuantity)
-        .then(() =>
-          dispatch(
-            removeItem({ productId: product!.id, quantity: updatedQuantity })
-          )
-        )
-        .catch((error) => console.log(error))
-        .finally(() => setIsSubmitting(false));
+      dispatch(
+        removeShoppingCartItemAsyc({
+          productId: product!.id,
+          quantity: updatedQuantity,
+        })
+      );
     }
   }
 
@@ -144,7 +140,7 @@ export default function ProductDetailsPage() {
 
           <Grid item xs={6}>
             <LoadingButton
-              loading={isSubmitting}
+              loading={status.includes("pendingRemoveItem" + product!.id)}
               disabled={
                 item?.quantity === quantity || (!item && quantity === 0)
               }
