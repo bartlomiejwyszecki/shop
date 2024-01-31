@@ -34,8 +34,8 @@ export default function ShoppingCart() {
     dispatch(addShoppingCartItemAsyc({ productId }));
   }
 
-  function handleRemoveItem(productId: number, quantity = 1) {
-    dispatch(removeShoppingCartItemAsyc({ productId, quantity }));
+  function handleRemoveItem(productId: number, quantity = 1, name = "") {
+    dispatch(removeShoppingCartItemAsyc({ productId, quantity, name }));
   }
 
   if (!shoppingCart) {
@@ -78,17 +78,15 @@ export default function ShoppingCart() {
                 <TableCell align="center">
                   <LoadingButton
                     color="error"
-                    loading={status.includes(
-                      "pendingRemoveItem" + item.productId
-                    )}
-                    onClick={() => handleRemoveItem(item.productId)}
+                    loading={status === "pendingRemoveItem" + item.productId + 'iem'}
+                    onClick={() => handleRemoveItem(item.productId, 1, 'iem')}
                   >
                     <Remove />
                   </LoadingButton>
                   {item.quantity}
                   <LoadingButton
                     color="secondary"
-                    loading={status.includes("pending" + item.productId)}
+                    loading={status === "pending" + item.productId}
                     onClick={() => handleAddItem(item.productId)}
                   >
                     <Add />
@@ -100,11 +98,11 @@ export default function ShoppingCart() {
                 <TableCell align="right">
                   <LoadingButton
                     color="error"
-                    loading={status.includes(
-                      "pendingRemoveItem" + item.productId
-                    )}
+                    loading={
+                      status === "pendingRemoveItem" + item.productId + "del"
+                    }
                     onClick={() =>
-                      handleRemoveItem(item.productId, item.quantity)
+                      handleRemoveItem(item.productId, item.quantity, "del")
                     }
                   >
                     <Delete />

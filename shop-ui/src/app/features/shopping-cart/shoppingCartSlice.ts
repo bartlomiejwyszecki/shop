@@ -28,10 +28,10 @@ export const addShoppingCartItemAsyc = createAsyncThunk<
 
 export const removeShoppingCartItemAsyc = createAsyncThunk<
   void,
-  { productId: number; quantity?: number }
+  { productId: number; quantity: number, name?: string }
 >(
   "shoppingCart/removeShoppingCartItemAsync",
-  async ({ productId, quantity = 1 }) => {
+  async ({ productId, quantity }) => {
     try {
       await shoppingCartHttp.removeItem(productId, quantity);
     } catch (error) {
@@ -60,7 +60,7 @@ export const shoppingCartSlice = createSlice({
       state.status = "idle";
     });
     builder.addCase(removeShoppingCartItemAsyc.pending, (state, action) => {
-      state.status = "pendingRemoveItem" + action.meta.arg.productId;
+      state.status = "pendingRemoveItem" + action.meta.arg.productId + action.meta.arg.name;
     });
     builder.addCase(removeShoppingCartItemAsyc.fulfilled, (state, action) => {
       const { productId, quantity } = action.meta.arg;
@@ -71,7 +71,7 @@ export const shoppingCartSlice = createSlice({
 
       if (itemIndex === -1 || itemIndex === undefined) return;
 
-      state.shoppingCart!.items[itemIndex].quantity -= quantity!;
+      state.shoppingCart!.items[itemIndex].quantity -= quantity;
 
       if (state.shoppingCart!.items[itemIndex].quantity <= 0) {
         state.shoppingCart!.items.splice(itemIndex, 1);
