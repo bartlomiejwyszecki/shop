@@ -11,8 +11,6 @@ import {
 } from "@mui/material";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Product } from "../../models/product.interface";
-import { productsHttp } from "../../api/productsHttp";
 import NotFound from "../../errors/NotFound";
 import LoadingComponent from "../../layout/LoadingComponent";
 import { LoadingButton } from "@mui/lab";
@@ -21,6 +19,7 @@ import {
   addShoppingCartItemAsyc,
   removeShoppingCartItemAsyc,
 } from "../shopping-cart/shoppingCartSlice";
+import { fetchProductAsync, productSelectors } from "../catalog/catalogSlice";
 
 export default function ProductDetailsPage() {
   const { shoppingCart, status } = useAppSelector(
@@ -30,8 +29,11 @@ export default function ProductDetailsPage() {
   const dispatch = useAppDispatch();
 
   const { id } = useParams<{ id: string }>();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
+  const product = useAppSelector((state) =>
+    productSelectors.selectById(state, +id!)
+  );
+
+  const { status: productStatus } = useAppSelector((state) => state.catalog);
   const [quantity, setQuantity] = useState(0);
   const item = shoppingCart?.items.find(
     (item) => item.productId === product?.id
@@ -40,13 +42,10 @@ export default function ProductDetailsPage() {
   useEffect(() => {
     if (item) setQuantity(item.quantity);
 
-    id &&
-      productsHttp
-        .getProductDetails(parseInt(id))
-        .then((productDetails) => setProduct(productDetails))
-        .catch((error) => console.log(error))
-        .finally(() => setLoading(false));
-  }, [id, item]);
+    if (!product) {
+      dispatch(fetchProductAsync(parseInt(id!)));
+    }
+  }, [dispatch, product, item, id]);
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
     if (parseInt(event.currentTarget.value) >= 0) {
@@ -76,7 +75,7 @@ export default function ProductDetailsPage() {
     }
   }
 
-  if (loading) {
+  if (productStatus.includes("pending")) {
     return <LoadingComponent />;
   }
 
