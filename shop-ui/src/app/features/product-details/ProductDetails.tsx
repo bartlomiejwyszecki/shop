@@ -139,7 +139,7 @@ export default function ProductDetailsPage() {
 
           <Grid item xs={6}>
             <LoadingButton
-              loading={status.includes("pendingRemoveItem" + product!.id)}
+              loading={status.includes("pendingRemoveItem")}
               disabled={
                 item?.quantity === quantity || (!item && quantity === 0)
               }

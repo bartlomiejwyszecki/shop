@@ -1,6 +1,5 @@
 import { Button, ButtonGroup, Container, Typography } from "@mui/material";
 import { testErrorsHttp } from "../../api/httpClient";
-import { toast } from "react-toastify";
 
 export default function AboutPage() {
   return (

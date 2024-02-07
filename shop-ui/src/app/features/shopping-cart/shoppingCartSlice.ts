@@ -17,25 +17,27 @@ export const addShoppingCartItemAsyc = createAsyncThunk<
   { productId: number; quantity?: number }
 >(
   "shoppingCart/addShoppingCartItemAsync",
-  async ({ productId, quantity = 1 }) => {
+  async ({ productId, quantity = 1 }, thunkAPI) => {
     try {
       return await shoppingCartHttp.addItem(productId, quantity);
-    } catch (error) {
-      console.log(error);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue({ error: error.data });
     }
   }
 );
 
 export const removeShoppingCartItemAsyc = createAsyncThunk<
   void,
-  { productId: number; quantity: number, name?: string }
+  { productId: number; quantity: number; name?: string }
 >(
   "shoppingCart/removeShoppingCartItemAsync",
-  async ({ productId, quantity }) => {
+  async ({ productId, quantity }, thunkAPI) => {
     try {
       await shoppingCartHttp.removeItem(productId, quantity);
-    } catch (error) {
-      console.log(error);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue({ error: error.data });
     }
   }
 );
@@ -56,11 +58,13 @@ export const shoppingCartSlice = createSlice({
       state.shoppingCart = action.payload;
       state.status = "idle";
     });
-    builder.addCase(addShoppingCartItemAsyc.rejected, (state) => {
+    builder.addCase(addShoppingCartItemAsyc.rejected, (state, action) => {
+      console.log(action.payload);
       state.status = "idle";
     });
     builder.addCase(removeShoppingCartItemAsyc.pending, (state, action) => {
-      state.status = "pendingRemoveItem" + action.meta.arg.productId + action.meta.arg.name;
+      state.status =
+        "pendingRemoveItem" + action.meta.arg.productId + action.meta.arg.name;
     });
     builder.addCase(removeShoppingCartItemAsyc.fulfilled, (state, action) => {
       const { productId, quantity } = action.meta.arg;
@@ -79,8 +83,9 @@ export const shoppingCartSlice = createSlice({
 
       state.status = "idle";
     });
-    builder.addCase(removeShoppingCartItemAsyc.rejected, (state) => {
+    builder.addCase(removeShoppingCartItemAsyc.rejected, (state, action) => {
       state.status = "idle";
+      console.log(action.payload);
     });
   },
 });
