@@ -3,11 +3,11 @@ import ProductList from "./components/ProductList";
 import { useEffect } from "react";
 import LoadingComponent from "../../layout/LoadingComponent";
 import { useAppDispatch, useAppSelector } from "../../store/configureStore";
-import { fetchProductsAsync, productSelectors } from "./catalogSlice";
+import { fetchFilters, fetchProductsAsync, productSelectors } from "./catalogSlice";
 
 export default function Catalog() {
   const products = useAppSelector(productSelectors.selectAll);
-  const { productsLoaded, status } = useAppSelector((state) => state.catalog);
+  const { productsLoaded, status, filtersLoaded } = useAppSelector((state) => state.catalog);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -15,6 +15,12 @@ export default function Catalog() {
       dispatch(fetchProductsAsync());
     }
   }, [productsLoaded, dispatch]);
+
+  useEffect(() => {
+    if (!filtersLoaded) {
+      dispatch(fetchFilters());
+    }
+  }, [filtersLoaded, dispatch]);
 
   if (status.includes("pending")) return <LoadingComponent />;
 
