@@ -1,15 +1,11 @@
 import {
   Box,
   Checkbox,
-  FormControl,
   FormControlLabel,
   FormGroup,
   Grid,
   Pagination,
   Paper,
-  Radio,
-  RadioGroup,
-  TextField,
   Typography,
 } from "@mui/material";
 import ProductList from "./components/ProductList";
@@ -20,7 +16,10 @@ import {
   fetchFilters,
   fetchProductsAsync,
   productSelectors,
+  setProductParams,
 } from "./catalogSlice";
+import ProductSearch from "./components/ProductSearch";
+import RadioButtonGroup from "../../components/RadioButtonGroup";
 
 const sortOptions = [
   { value: "name", label: "Alphabetical" },
@@ -30,8 +29,14 @@ const sortOptions = [
 
 export default function Catalog() {
   const products = useAppSelector(productSelectors.selectAll);
-  const { productsLoaded, status, filtersLoaded, brands, types } =
-    useAppSelector((state) => state.catalog);
+  const {
+    productsLoaded,
+    status,
+    filtersLoaded,
+    brands,
+    types,
+    productParams,
+  } = useAppSelector((state) => state.catalog);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -52,25 +57,16 @@ export default function Catalog() {
     <Grid container spacing={4}>
       <Grid item xs={3}>
         <Paper sx={{ mb: 2 }}>
-          <TextField label="Search products" variant="outlined" fullWidth />
+          <ProductSearch />
         </Paper>
         <Paper sx={{ mb: 2, p: 2 }}>
-          <FormControl>
-            <RadioGroup
-              aria-labelledby="demo-radio-buttons-group-label"
-              defaultValue="female"
-              name="radio-buttons-group"
-            >
-              {sortOptions.map((opt) => (
-                <FormControlLabel
-                  value={opt.value}
-                  control={<Radio />}
-                  label={opt.label}
-                  key={opt.label}
-                />
-              ))}
-            </RadioGroup>
-          </FormControl>
+          <RadioButtonGroup
+            options={sortOptions}
+            onChange={(event) =>
+              dispatch(setProductParams({ orderBy: event.target.value }))
+            }
+            selectedValue={productParams.orderBy}
+          />
         </Paper>
 
         <Paper sx={{ mb: 2, p: 2 }}>
