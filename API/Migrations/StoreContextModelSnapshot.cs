@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace API.Data.Migrations
+namespace API.Migrations
 {
     [DbContext(typeof(StoreContext))]
     partial class StoreContextModelSnapshot : ModelSnapshot
@@ -34,8 +34,11 @@ namespace API.Data.Migrations
                     b.Property<string>("PictureUrl")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Price")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("ProductDiscountId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("QuantityInStock")
                         .HasColumnType("INTEGER");
@@ -46,6 +49,41 @@ namespace API.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("API.Entities.ProductDiscount", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("QuantityInStock")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductDiscounts");
+                });
+
+            modelBuilder.Entity("API.Entities.ProductProductDiscount", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ProductDiscountId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ProductId", "ProductDiscountId");
+
+                    b.HasIndex("ProductDiscountId");
+
+                    b.ToTable("ProductProductDiscounts");
                 });
 
             modelBuilder.Entity("API.Entities.ShoppingCart", b =>
@@ -86,6 +124,25 @@ namespace API.Data.Migrations
                     b.ToTable("ShoppingCartItems");
                 });
 
+            modelBuilder.Entity("API.Entities.ProductProductDiscount", b =>
+                {
+                    b.HasOne("API.Entities.ProductDiscount", "ProductDiscount")
+                        .WithMany("ProductProductDiscounts")
+                        .HasForeignKey("ProductDiscountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.Product", "Product")
+                        .WithMany("ProductProductDiscounts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ProductDiscount");
+                });
+
             modelBuilder.Entity("API.Entities.ShoppingCartItem", b =>
                 {
                     b.HasOne("API.Entities.Product", "Product")
@@ -103,6 +160,16 @@ namespace API.Data.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("Shopping");
+                });
+
+            modelBuilder.Entity("API.Entities.Product", b =>
+                {
+                    b.Navigation("ProductProductDiscounts");
+                });
+
+            modelBuilder.Entity("API.Entities.ProductDiscount", b =>
+                {
+                    b.Navigation("ProductProductDiscounts");
                 });
 
             modelBuilder.Entity("API.Entities.ShoppingCart", b =>
