@@ -10,7 +10,7 @@ namespace API.Entities
         public int ProductId { get; set; }
         public Product Product { get; set; }
 
-        public int ProductDiscountId { get; set; }
+        public Guid ProductDiscountId { get; set; }
         public ProductDiscount ProductDiscount { get; set; }
     }
 }
