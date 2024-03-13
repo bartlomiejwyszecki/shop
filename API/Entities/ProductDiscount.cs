@@ -12,6 +12,6 @@ namespace API.Entities
         public string Description { get; set; }
         public double Amount { get; set; }
         public int QuantityInStock { get; set; }
-        public List<ProductProductDiscount> ProductProductDiscounts { get; set; }
+        public virtual ICollection<Product> Products { get; set; }
     }
 }
