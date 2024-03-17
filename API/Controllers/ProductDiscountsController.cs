@@ -76,5 +76,26 @@ namespace API.Controllers
 
             return BadRequest(new ProblemDetails { Title = "Problem saving discount" });
         }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> RemoveProductDiscount(Guid id)
+        {
+            var productDiscount = await _context.ProductDiscounts
+                .Include(pd => pd.Products)
+                .FirstOrDefaultAsync(pd => pd.Id == id);
+
+            if (productDiscount == null)
+            {
+                return NotFound($"ProductDiscount with ID {id} bot found.");
+            }
+
+            productDiscount.Products.Clear();
+
+            _context.ProductDiscounts.Remove(productDiscount);
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
