@@ -34,7 +34,7 @@ function getAxiosParams(productParams: ProductParams) {
   }
 
   if (productParams.types) {
-    params.append("brands", productParams.types.toString());
+    params.append("types", productParams.types.toString());
   }
 
   return params;
@@ -43,7 +43,7 @@ function getAxiosParams(productParams: ProductParams) {
 export const fetchProductsAsync = createAsyncThunk<Product[], void, { state: RootState }>(
   "catalog/fetchProductsAsync",
   async (_, thunkAPI) => {
-    const params = getAxiosParams(thunkAPI.getState().catalog.productParams);
+    const params = getAxiosParams({ ...thunkAPI.getState().catalog.productParams });
 
     try {
       return await productsHttp.getProductsList(params);
@@ -125,8 +125,7 @@ export const catalogSlice = createSlice({
       productsAdapter.upsertOne(state, action.payload);
       state.status = "idle";
     });
-    builder.addCase(fetchProductAsync.rejected, (state, action) => {
-      console.log(action);
+    builder.addCase(fetchProductAsync.rejected, (state) => {
       state.status = "idle";
     });
     builder.addCase(fetchFilters.pending, (state) => {
@@ -137,9 +136,8 @@ export const catalogSlice = createSlice({
       state.types = action.payload.types;
       state.filtersLoaded = true;
     });
-    builder.addCase(fetchFilters.rejected, (state, action) => {
+    builder.addCase(fetchFilters.rejected, (state) => {
       state.status = "idle";
-      console.log(action.payload);
     });
   },
 });
