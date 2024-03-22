@@ -6,6 +6,7 @@ import {
 import { Product, ProductParams } from "../../models/product.interface";
 import { productsHttp } from "../../api/productsHttp";
 import { RootState } from "../../store/configureStore";
+import { MetaData } from "../../models/pagination.interface";
 
 interface CatalogState {
   productsLoaded: boolean;
@@ -14,6 +15,7 @@ interface CatalogState {
   brands: string[];
   types: string[];
   productParams: ProductParams;
+  metaData: MetaData | null;
 }
 
 const productsAdapter = createEntityAdapter<Product>();
@@ -40,19 +42,24 @@ function getAxiosParams(productParams: ProductParams) {
   return params;
 }
 
-export const fetchProductsAsync = createAsyncThunk<Product[], void, { state: RootState }>(
-  "catalog/fetchProductsAsync",
-  async (_, thunkAPI) => {
-    const params = getAxiosParams({ ...thunkAPI.getState().catalog.productParams });
+export const fetchProductsAsync = createAsyncThunk<
+  Product[],
+  void,
+  { state: RootState }
+>("catalog/fetchProductsAsync", async (_, thunkAPI) => {
+  const params = getAxiosParams(thunkAPI.getState().catalog.productParams);
 
-    try {
-      return await productsHttp.getProductsList(params);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      return thunkAPI.rejectWithValue({ error: error.data });
-    }
+  try {
+    const response = await productsHttp.getProductsList(params);
+
+    thunkAPI.dispatch(setMetaData(response.metaData));
+
+    return response.items;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue({ error: error.data });
   }
-);
+});
 
 export const fetchProductAsync = createAsyncThunk<Product, number>(
   "catalog/fetchProductAsync",
@@ -93,6 +100,7 @@ export const catalogSlice = createSlice({
     brands: [],
     types: [],
     productParams: initProductsParams,
+    metaData: null,
   }),
   reducers: {
     setProductParams: (state, action) => {
@@ -101,6 +109,9 @@ export const catalogSlice = createSlice({
         ...state.productParams,
         ...action.payload,
       };
+    },
+    setMetaData: (state, action) => {
+      state.metaData = action.payload;
     },
     resetProductParams: (state) => {
       state.productParams = initProductsParams;
@@ -145,4 +156,5 @@ export const catalogSlice = createSlice({
 export const productSelectors = productsAdapter.getSelectors(
   (state: RootState) => state.catalog
 );
-export const { setProductParams, resetProductParams } = catalogSlice.actions;
+export const { setProductParams, resetProductParams, setMetaData } =
+  catalogSlice.actions;
