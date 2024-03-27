@@ -1,4 +1,4 @@
-import { Box, Grid, Pagination, Paper, Typography } from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 import ProductList from "./components/ProductList";
 import { useEffect } from "react";
 import LoadingComponent from "../../layout/LoadingComponent";
@@ -7,6 +7,7 @@ import {
   fetchFilters,
   fetchProductsAsync,
   productSelectors,
+  setPageNumber,
   setProductParams,
 } from "./catalogSlice";
 import ProductSearch from "./components/ProductSearch";
@@ -87,7 +88,7 @@ export default function Catalog() {
         <AppPagination
           metaData={metaData}
           onPageChange={(page: number) =>
-            dispatch(setProductParams({ pageNumber: page }))
+            dispatch(setPageNumber({ pageNumber: page }))
           }
         />
       </Grid>
